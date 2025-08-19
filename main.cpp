@@ -135,6 +135,31 @@ void saveSales(const string& filename, const vector<Sale>& sales) {
     }
 }
 
+void displayAllSales(const vector<Sale>& sales) {
+    if (sales.empty()) {
+        cout << "No sales records found.\n";
+        return;
+    }
+
+    cout << "\nCurrent Sales Records:\n";
+    cout << left << setw(12) << "Date"
+         << setw(10) << "SaleID"
+         << setw(20) << "Item Name"
+         << setw(10) << "Quantity"
+         << setw(10) << "Price" << "\n";
+    cout << string(60, '-') << "\n";
+
+    for (const auto& s : sales) {
+        cout << left << setw(12) << s.date
+             << setw(10) << s.id
+             << setw(20) << s.itemName
+             << setw(10) << s.quantity
+             << setw(10) << fixed << setprecision(2) << s.price << "\n";
+    }
+
+    cout << "\n";
+}
+
 void inputs(string& date, string& itemName, int& quantity, double& unitPrice) {
     cout << "Enter Date (dd/mm/yyyy): ";
     cin >> date;
