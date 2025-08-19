@@ -67,6 +67,40 @@ char getYesNoInput(const string& prompt) {
     }
 }
 
+
+int getNextSalesID(const string& filename) {
+    ifstream file(filename);
+    if (!file) return 1;
+    string line; getline(file, line);
+    int maxId = 0;
+    while (getline(file, line)) {
+        if (line.empty()) continue;
+        stringstream ss(line);
+        string date, idStr;
+        getline(ss, date, ',');
+        getline(ss, idStr, ',');
+        try {
+            int id = stoi(idStr);
+            if (id > maxId) maxId = id;
+        } catch (...) {}
+    }
+    return maxId + 1;
+}
+
+void appendToCSV(const string& filename, const Sale& s) {
+    bool writeHeader = !filesystem::exists(filename) || isFileEmpty(filename);
+    ofstream file(filename, ios::app);
+    if (!file) {
+        cerr << "Error opening file for writing\n";
+        return;
+    }
+    if (writeHeader) {
+        file << "date,saleID,item name,item quantity,price\n";
+    }
+    file << s.date << "," << s.id << "," << s.itemName << ","
+         << s.quantity << "," << fixed << setprecision(2) << s.price << "\n";
+}
+
 void inputs(string& date, string& itemName, int& quantity, double& unitPrice) {
     cout << "Enter Date (dd/mm/yyyy): ";
     cin >> date;
