@@ -101,6 +101,40 @@ void appendToCSV(const string& filename, const Sale& s) {
          << s.quantity << "," << fixed << setprecision(2) << s.price << "\n";
 }
 
+vector<Sale> loadSales(const string& filename) {
+    vector<Sale> sales;
+    ifstream file(filename);
+    if (!file) return sales;
+    string line;
+    getline(file, line); // skip header
+    while (getline(file, line)) {
+        if (line.empty()) continue;
+        stringstream ss(line);
+        Sale s;
+        string temp;
+        getline(ss, s.date, ',');
+        getline(ss, temp, ','); s.id = stoi(temp);
+        getline(ss, s.itemName, ',');
+        getline(ss, temp, ','); s.quantity = stoi(temp);
+        getline(ss, temp, ','); s.price = stod(temp);
+        sales.push_back(s);
+    }
+    return sales;
+}
+
+void saveSales(const string& filename, const vector<Sale>& sales) {
+    ofstream file(filename);
+    if (!file) {
+        cerr << "Error opening file for writing\n";
+        return;
+    }
+    file << "date,saleID,item name,item quantity,price\n";
+    for (const auto& s : sales) {
+        file << s.date << "," << s.id << "," << s.itemName << ","
+             << s.quantity << "," << fixed << setprecision(2) << s.price << "\n";
+    }
+}
+
 void inputs(string& date, string& itemName, int& quantity, double& unitPrice) {
     cout << "Enter Date (dd/mm/yyyy): ";
     cin >> date;
