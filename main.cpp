@@ -38,6 +38,35 @@ bool isValidDate(const string& date) {
     if (day < 1 || day > daysInMonth[month - 1]) return false;
     return true;
 }
+string convertDMYtoISO(const string& dmy) {
+    return dmy.substr(6, 4) + "-" + dmy.substr(3, 2) + "-" + dmy.substr(0, 2);
+}
+
+string convertISOtoDMY(const string& iso) {
+    return iso.substr(8, 2) + "/" + iso.substr(5, 2) + "/" + iso.substr(0, 4);
+}
+
+string getTodayDateDMYwithDash() {
+    time_t t = time(nullptr);
+    tm* now = localtime(&t);
+    char buffer[11];
+    strftime(buffer, sizeof(buffer), "%d-%m-%Y", now);
+    return string(buffer);
+}
+
+char getYesNoInput(const string& prompt) {
+    char choice;
+    while (true) {
+        cout << prompt;
+        cin >> choice;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        if (choice == 'y' || choice == 'Y' || choice == 'n' || choice == 'N') {
+            return choice;
+        }
+        cout << "Invalid input! Please enter Y or N.\n";
+    }
+}
+
 void inputs(string& date, string& itemName, int& quantity, double& unitPrice) {
     cout << "Enter Date (dd/mm/yyyy): ";
     cin >> date;
