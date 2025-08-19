@@ -130,6 +130,65 @@ void deleteRecord(const string& filename) {
         cout << "Record not found.\n";
     }
 }
+void sortSalesByDate(const string& inputFilename, const string& outputFilename = "temp.csv") {
+    vector<Sale> sales = loadSales(inputFilename);
+    if (sales.empty()) return;
+    sort(sales.begin(), sales.end(), [](const Sale& a, const Sale& b) {
+        return convertDMYtoISO(a.date) < convertDMYtoISO(b.date);
+    });
+    saveSales(outputFilename, sales);
+}
+
+void displayReport(const string& filename, const string& reportFile = "report.txt") {
+    vector<Sale> sales = loadSales(filename);
+    ofstream report(reportFile);
+    if (!report) {
+        cerr << "Cannot open report.txt for writing.\n";
+        return;
+    }
+    if (sales.empty()) {
+        report << "No sales records found.\n";
+        cout << "No sales records found to generate report.\n";
+        return;
+    }
+
+    map<string, vector<Sale>> grouped;
+    for (const auto& s : sales) {
+        grouped[convertDMYtoISO(s.date)].push_back(s);
+    }
+
+    double grandTotal = 0;
+    string today = getTodayDateDMYwithDash();
+
+    report << "c: " << today << "\n\n";
+    report << "Sales Report : Stationary Items Sold\n\n";
+    report << "---------------------------------------------------------------------------------------------------\n\n";
+    report << "Date                SaleID             ItemName        Quantity     Price          SalesAmount\n\n";
+    report << "--------------------------------------------------------------------------------------------------\n\n";
+
+    for (const auto& [date, recs] : grouped) {
+        double subtotal = 0;
+        for (const auto& r : recs) {
+            double salesAmount = r.quantity * r.price;
+            subtotal += salesAmount;
+
+            report << left << setw(15) << date;
+            report << setw(20) << r.id;
+            report << setw(25) << r.itemName;
+            report << setw(13) << r.quantity;
+            report << setw(15) << (int)r.price;
+            report << fixed << setprecision(0) << salesAmount << "  \n";
+        }
+        report << "\n--------------------------------------------------------------------------------------------------------- \n\n";
+        report << setw(70) << ("Subtotal for " + date + " is :") << fixed << setprecision(0) << subtotal << " \n\n";
+        report << "---------------------------------------------------------------------------------------------------------- \n\n";
+        grandTotal += subtotal;
+    }
+
+    report << setw(70) << "Grand Total:" << fixed << setprecision(0) << grandTotal << "\n";
+
+    cout << "Report generated and saved to " << reportFile << "\n";
+}
 
 // ----------------- Main -----------------
 
