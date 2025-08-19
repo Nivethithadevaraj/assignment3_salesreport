@@ -21,6 +21,42 @@ struct Sale {
     double price;
 };
 
+void inputs(string& date, string& itemName, int& quantity, double& unitPrice) {
+    cout << "Enter Date (dd/mm/yyyy): ";
+    cin >> date;
+    while (!isValidDate(date)) {
+        cout << "Invalid date format! Enter again (dd/mm/yyyy): ";
+        cin >> date;
+    }
+    cin.ignore();
+    cout << "Enter Item Name: ";
+    getline(cin, itemName);
+    cout << "Enter Quantity: ";
+    while (!(cin >> quantity) || quantity < 0) {
+        cout << "Invalid quantity! Enter again: ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+    cout << "Enter Unit Price: ";
+    while (!(cin >> unitPrice) || unitPrice < 0) {
+        cout << "Invalid price! Enter again: ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+    cin.ignore();
+}
+
+void createRecords(const string& filename) {
+    int nextId = getNextSalesID(filename);
+    char choice;
+    do {
+        Sale s;
+        s.id = nextId++;
+        inputs(s.date, s.itemName, s.quantity, s.price);
+        appendToCSV(filename, s);
+        choice = getYesNoInput("Record saved.\nAdd another? (Y/N): ");
+    } while (choice == 'y' || choice == 'Y');
+}
 // ----------------- Main -----------------
 
 int main() {
