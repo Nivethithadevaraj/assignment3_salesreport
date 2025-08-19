@@ -108,6 +108,28 @@ void updateRecord(const string& filename) {
         cout << "Record not found.\n";
     }
 }
+void deleteRecord(const string& filename) {
+    vector<Sale> sales = loadSales(filename);
+    if (sales.empty()) {
+        cout << "No records to delete.\n";
+        return;
+    }
+
+    displayAllSales(sales);
+
+    int id;
+    cout << "Enter saleID to delete: ";
+    cin >> id;
+    cin.ignore();
+    auto it = remove_if(sales.begin(), sales.end(), [id](const Sale& s){ return s.id == id; });
+    if (it != sales.end()) {
+        sales.erase(it, sales.end());
+        saveSales(filename, sales);
+        cout << "Record deleted.\n";
+    } else {
+        cout << "Record not found.\n";
+    }
+}
 
 // ----------------- Main -----------------
 
