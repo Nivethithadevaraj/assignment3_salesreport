@@ -57,6 +57,58 @@ void createRecords(const string& filename) {
         choice = getYesNoInput("Record saved.\nAdd another? (Y/N): ");
     } while (choice == 'y' || choice == 'Y');
 }
+void updateRecord(const string& filename) {
+    vector<Sale> sales = loadSales(filename);
+    if (sales.empty()) {
+        cout << "No records to update.\n";
+        return;
+    }
+
+    displayAllSales(sales);
+
+    int id;
+    cout << "Enter saleID to update: ";
+    cin >> id;
+    cin.ignore();
+    bool found = false;
+
+    for (auto& s : sales) {
+        if (s.id == id) {
+            found = true;
+            cout << "Enter new date (dd/mm/yyyy): ";
+            cin >> s.date;
+            while (!isValidDate(s.date)) {
+                cout << "Invalid date! Enter again: ";
+                cin >> s.date;
+            }
+            cin.ignore();
+            cout << "Enter new item name: ";
+            getline(cin, s.itemName);
+            cout << "Enter new quantity: ";
+            while (!(cin >> s.quantity) || s.quantity < 0) {
+                cout << "Invalid quantity! Enter again: ";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            }
+            cout << "Enter new price: ";
+            while (!(cin >> s.price) || s.price < 0) {
+                cout << "Invalid price! Enter again: ";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            }
+            cin.ignore();
+            break;
+        }
+    }
+
+    if (found) {
+        saveSales(filename, sales);
+        cout << "Record updated.\n";
+    } else {
+        cout << "Record not found.\n";
+    }
+}
+
 // ----------------- Main -----------------
 
 int main() {
