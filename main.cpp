@@ -21,6 +21,23 @@ struct Sale {
     double price;
 };
 
+bool isFileEmpty(const string& filename) {
+    ifstream file(filename);
+    return file.peek() == ifstream::traits_type::eof();
+}
+
+bool isValidDate(const string& date) {
+    if (date.length() != 10 || date[2] != '/' || date[5] != '/') return false;
+    int day = stoi(date.substr(0, 2));
+    int month = stoi(date.substr(3, 2));
+    int year = stoi(date.substr(6, 4));
+    if (year < 1000 || year > 9999) return false;
+    if (month < 1 || month > 12) return false;
+    bool isLeap = (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0));
+    int daysInMonth[] = {31, isLeap ? 29 : 28,31,30,31,30,31,31,30,31,30,31};
+    if (day < 1 || day > daysInMonth[month - 1]) return false;
+    return true;
+}
 void inputs(string& date, string& itemName, int& quantity, double& unitPrice) {
     cout << "Enter Date (dd/mm/yyyy): ";
     cin >> date;
